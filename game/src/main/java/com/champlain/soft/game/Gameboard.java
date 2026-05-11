@@ -2,11 +2,14 @@ package com.champlain.soft.game;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
+import java.util.Random;
 
 public class Gameboard extends Application {
 
@@ -24,26 +27,51 @@ public class Gameboard extends Application {
 
     private CellType[][] matrix = new CellType[ROWS][COLS];
 
+    // Player position
+    private int playerRow = 1;
+    private int playerCol = 1;
+
+    // Images
+    private Image grassImage = new Image(
+            "file:C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/grass.png");
+
+    private Image playerImage = new Image(
+            "file:C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/player.png");
+
+    private Image princessImage = new Image(
+            "file:C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/princess.png");
+
+    private Image bombImage = new Image(
+            "file:C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/bomb.png");
+
+    private Image wallImage = new Image(
+            "file:C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/wall.png");
+
     @Override
     public void start(Stage stage) {
 
         initMatrix();
 
         GridPane grid = new GridPane();
+
         drawBoard(grid);
 
         BorderPane root = new BorderPane();
+
         root.setCenter(grid);
 
         Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
 
         stage.setTitle("Rescue the Princess");
+
         stage.setScene(scene);
+
         stage.show();
     }
 
     private void initMatrix() {
 
+        // Fill with grass
         for (int r = 0; r < ROWS; r++) {
 
             for (int c = 0; c < COLS; c++) {
@@ -52,9 +80,52 @@ public class Gameboard extends Application {
             }
         }
 
-        matrix[0][0] = CellType.PLAYER;
-        matrix[9][9] = CellType.PRINCESS;
-        matrix[4][5] = CellType.BOMB;
+        // Walls on perimeter
+        for (int r = 0; r < ROWS; r++) {
+
+            matrix[r][0] = CellType.WALL;
+            matrix[r][COLS - 1] = CellType.WALL;
+        }
+
+        for (int c = 0; c < COLS; c++) {
+
+            matrix[0][c] = CellType.WALL;
+            matrix[ROWS - 1][c] = CellType.WALL;
+        }
+
+        // Player
+        matrix[playerRow][playerCol] = CellType.PLAYER;
+
+        Random random = new Random();
+
+        // Princess random position
+        int princessRow;
+        int princessCol;
+
+        do {
+
+            princessRow = random.nextInt(ROWS);
+            princessCol = random.nextInt(COLS);
+
+        } while (matrix[princessRow][princessCol] != CellType.GRASS);
+
+        matrix[princessRow][princessCol] = CellType.PRINCESS;
+
+        // Bombs random positions
+        for (int i = 0; i < 3; i++) {
+
+            int bombRow;
+            int bombCol;
+
+            do {
+
+                bombRow = random.nextInt(ROWS);
+                bombCol = random.nextInt(COLS);
+
+            } while (matrix[bombRow][bombCol] != CellType.GRASS);
+
+            matrix[bombRow][bombCol] = CellType.BOMB;
+        }
     }
 
     private void drawBoard(GridPane grid) {
@@ -69,24 +140,57 @@ public class Gameboard extends Application {
 
                 cell.setPrefSize(60, 60);
 
-                cell.setStyle("-fx-border-color: black; -fx-background-color: beige;");
+                // Grass background
+                ImageView background = new ImageView(grassImage);
 
-                Label label = new Label();
+                background.setFitWidth(60);
+                background.setFitHeight(60);
 
-                if(matrix[row][col] == CellType.PLAYER) {
+                cell.getChildren().add(background);
 
-                    label.setText("🧍");
+                // Player
+                if (matrix[row][col] == CellType.PLAYER) {
 
-                } else if(matrix[row][col] == CellType.PRINCESS) {
+                    ImageView player = new ImageView(playerImage);
 
-                    label.setText("👸");
+                    player.setFitWidth(40);
+                    player.setFitHeight(40);
 
-                } else if(matrix[row][col] == CellType.BOMB) {
-
-                    label.setText("💣");
+                    cell.getChildren().add(player);
                 }
 
-                cell.getChildren().add(label);
+                // Princess
+                else if (matrix[row][col] == CellType.PRINCESS) {
+
+                    ImageView princess = new ImageView(princessImage);
+
+                    princess.setFitWidth(40);
+                    princess.setFitHeight(40);
+
+                    cell.getChildren().add(princess);
+                }
+
+                // Bomb
+                else if (matrix[row][col] == CellType.BOMB) {
+
+                    ImageView bomb = new ImageView(bombImage);
+
+                    bomb.setFitWidth(40);
+                    bomb.setFitHeight(40);
+
+                    cell.getChildren().add(bomb);
+                }
+
+                // Wall
+                else if (matrix[row][col] == CellType.WALL) {
+
+                    ImageView wall = new ImageView(wallImage);
+
+                    wall.setFitWidth(60);
+                    wall.setFitHeight(60);
+
+                    cell.getChildren().add(wall);
+                }
 
                 grid.add(cell, col, row);
             }
@@ -94,6 +198,7 @@ public class Gameboard extends Application {
     }
 
     public static void main(String[] args) {
+
         launch();
     }
 }
