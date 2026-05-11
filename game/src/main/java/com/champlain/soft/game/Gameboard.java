@@ -29,6 +29,12 @@ public class Gameboard extends Application {
     private int playerRow = 1;
     private int playerCol = 1;
 
+    // LIVES
+    private int lives = 3;
+
+    // GAME OVER BOOLEAN
+    private boolean gameOver = false;
+
     // DIRECT IMAGE LINKS
     private Image grassImage =
             new Image("file:///C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/grass.png");
@@ -64,6 +70,10 @@ public class Gameboard extends Application {
 
         // MOVEMENT
         scene.setOnKeyPressed(event -> {
+
+            if(gameOver) {
+                return;
+            }
 
             switch (event.getCode()) {
 
@@ -149,13 +159,13 @@ public class Gameboard extends Application {
 
         int newCol = playerCol + dCol;
 
-        // Stop at walls
+        // WALL
         if (matrix[newRow][newCol] == CellType.WALL) {
 
             return;
         }
 
-        // WIN CONDITION
+        // PRINCESS
         if (matrix[newRow][newCol] == CellType.PRINCESS) {
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -167,17 +177,54 @@ public class Gameboard extends Application {
             alert.setContentText("You rescued the princess!");
 
             alert.showAndWait();
+
+            gameOver = true;
+        }
+
+        // BOMB
+        if (matrix[newRow][newCol] == CellType.BOMB) {
+
+            lives--;
+
+            Alert bombAlert = new Alert(Alert.AlertType.WARNING);
+
+            bombAlert.setTitle("Bomb");
+
+            bombAlert.setHeaderText(null);
+
+            bombAlert.setContentText("You hit a bomb! Lives left: " + lives);
+
+            bombAlert.showAndWait();
+
+            // Remove bomb after touching it
+            matrix[newRow][newCol] = CellType.GRASS;
+
+            // GAME OVER
+            if (lives == 0) {
+
+                Alert gameOverAlert = new Alert(Alert.AlertType.ERROR);
+
+                gameOverAlert.setTitle("Game Over");
+
+                gameOverAlert.setHeaderText(null);
+
+                gameOverAlert.setContentText("No lives left!");
+
+                gameOverAlert.showAndWait();
+
+                gameOver = true;
+            }
         }
 
         // Remove old player position
         matrix[playerRow][playerCol] = CellType.GRASS;
 
-        // Update player position
+        // Update position
         playerRow = newRow;
 
         playerCol = newCol;
 
-        // Put player in new position
+        // Put player
         matrix[playerRow][playerCol] = CellType.PLAYER;
 
         drawBoard();
@@ -195,7 +242,7 @@ public class Gameboard extends Application {
 
                 cell.setPrefSize(60, 60);
 
-                // Grass background
+                // GRASS
                 ImageView background = new ImageView(grassImage);
 
                 background.setFitWidth(60);
@@ -204,7 +251,7 @@ public class Gameboard extends Application {
 
                 cell.getChildren().add(background);
 
-                // Player
+                // PLAYER
                 if (matrix[row][col] == CellType.PLAYER) {
 
                     ImageView player = new ImageView(playerImage);
@@ -216,7 +263,7 @@ public class Gameboard extends Application {
                     cell.getChildren().add(player);
                 }
 
-                // Princess
+                // PRINCESS
                 else if (matrix[row][col] == CellType.PRINCESS) {
 
                     ImageView princess = new ImageView(princessImage);
@@ -228,7 +275,7 @@ public class Gameboard extends Application {
                     cell.getChildren().add(princess);
                 }
 
-                // Bomb
+                // BOMB
                 else if (matrix[row][col] == CellType.BOMB) {
 
                     ImageView bomb = new ImageView(bombImage);
@@ -240,7 +287,7 @@ public class Gameboard extends Application {
                     cell.getChildren().add(bomb);
                 }
 
-                // Wall
+                // WALL
                 else if (matrix[row][col] == CellType.WALL) {
 
                     ImageView wall = new ImageView(wallImage);
