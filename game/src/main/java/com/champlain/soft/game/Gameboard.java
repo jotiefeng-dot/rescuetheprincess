@@ -2,6 +2,7 @@ package com.champlain.soft.game;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -28,7 +29,7 @@ public class Gameboard extends Application {
     private int playerRow = 1;
     private int playerCol = 1;
 
-    // DIRECT LINKS
+    // DIRECT IMAGE LINKS
     private Image grassImage =
             new Image("file:///C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/grass.png");
 
@@ -44,20 +45,37 @@ public class Gameboard extends Application {
     private Image wallImage =
             new Image("file:///C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/wall.png");
 
+    private GridPane grid;
+
     @Override
     public void start(Stage stage) {
 
         initMatrix();
 
-        GridPane grid = new GridPane();
+        grid = new GridPane();
 
-        drawBoard(grid);
+        drawBoard();
 
         BorderPane root = new BorderPane();
 
         root.setCenter(grid);
 
         Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
+
+        // MOVEMENT
+        scene.setOnKeyPressed(event -> {
+
+            switch (event.getCode()) {
+
+                case UP -> movePlayer(-1, 0);
+
+                case DOWN -> movePlayer(1, 0);
+
+                case LEFT -> movePlayer(0, -1);
+
+                case RIGHT -> movePlayer(0, 1);
+            }
+        });
 
         stage.setTitle("Rescue the Princess");
 
@@ -68,7 +86,7 @@ public class Gameboard extends Application {
 
     private void initMatrix() {
 
-        // Fill board with grass
+        // Fill with grass
         for (int r = 0; r < ROWS; r++) {
 
             for (int c = 0; c < COLS; c++) {
@@ -77,7 +95,7 @@ public class Gameboard extends Application {
             }
         }
 
-        // Walls on perimeter
+        // Walls
         for (int r = 0; r < ROWS; r++) {
 
             matrix[r][0] = CellType.WALL;
@@ -95,7 +113,7 @@ public class Gameboard extends Application {
 
         Random random = new Random();
 
-        // Princess random position
+        // Princess
         int princessRow;
         int princessCol;
 
@@ -108,7 +126,7 @@ public class Gameboard extends Application {
 
         matrix[princessRow][princessCol] = CellType.PRINCESS;
 
-        // Bombs random positions
+        // Bombs
         for (int i = 0; i < 3; i++) {
 
             int bombRow;
@@ -125,7 +143,47 @@ public class Gameboard extends Application {
         }
     }
 
-    private void drawBoard(GridPane grid) {
+    private void movePlayer(int dRow, int dCol) {
+
+        int newRow = playerRow + dRow;
+
+        int newCol = playerCol + dCol;
+
+        // Stop at walls
+        if (matrix[newRow][newCol] == CellType.WALL) {
+
+            return;
+        }
+
+        // WIN CONDITION
+        if (matrix[newRow][newCol] == CellType.PRINCESS) {
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+            alert.setTitle("Victory");
+
+            alert.setHeaderText(null);
+
+            alert.setContentText("You rescued the princess!");
+
+            alert.showAndWait();
+        }
+
+        // Remove old player position
+        matrix[playerRow][playerCol] = CellType.GRASS;
+
+        // Update player position
+        playerRow = newRow;
+
+        playerCol = newCol;
+
+        // Put player in new position
+        matrix[playerRow][playerCol] = CellType.PLAYER;
+
+        drawBoard();
+    }
+
+    private void drawBoard() {
 
         grid.getChildren().clear();
 
@@ -141,6 +199,7 @@ public class Gameboard extends Application {
                 ImageView background = new ImageView(grassImage);
 
                 background.setFitWidth(60);
+
                 background.setFitHeight(60);
 
                 cell.getChildren().add(background);
@@ -151,6 +210,7 @@ public class Gameboard extends Application {
                     ImageView player = new ImageView(playerImage);
 
                     player.setFitWidth(40);
+
                     player.setFitHeight(40);
 
                     cell.getChildren().add(player);
@@ -162,6 +222,7 @@ public class Gameboard extends Application {
                     ImageView princess = new ImageView(princessImage);
 
                     princess.setFitWidth(40);
+
                     princess.setFitHeight(40);
 
                     cell.getChildren().add(princess);
@@ -173,6 +234,7 @@ public class Gameboard extends Application {
                     ImageView bomb = new ImageView(bombImage);
 
                     bomb.setFitWidth(40);
+
                     bomb.setFitHeight(40);
 
                     cell.getChildren().add(bomb);
@@ -184,6 +246,7 @@ public class Gameboard extends Application {
                     ImageView wall = new ImageView(wallImage);
 
                     wall.setFitWidth(60);
+
                     wall.setFitHeight(60);
 
                     cell.getChildren().add(wall);
