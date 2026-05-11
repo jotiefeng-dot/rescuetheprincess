@@ -13,11 +13,9 @@ import java.util.Random;
 
 public class Gameboard extends Application {
 
-    // Grid constants
     private static final int ROWS = 10;
     private static final int COLS = 10;
 
-    // Scene constants
     private static final int SCENE_WIDTH = 800;
     private static final int SCENE_HEIGHT = 800;
 
@@ -27,25 +25,24 @@ public class Gameboard extends Application {
 
     private CellType[][] matrix = new CellType[ROWS][COLS];
 
-    // Player position
     private int playerRow = 1;
     private int playerCol = 1;
 
-    // Images
-    private Image grassImage = new Image(
-            "file:C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/grass.png");
+    // DIRECT LINKS
+    private Image grassImage =
+            new Image("file:///C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/grass.png");
 
-    private Image playerImage = new Image(
-            "file:C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/player.png");
+    private Image playerImage =
+            new Image("file:///C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/player.png");
 
-    private Image princessImage = new Image(
-            "file:C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/princess.png");
+    private Image princessImage =
+            new Image("file:///C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/princess.png");
 
-    private Image bombImage = new Image(
-            "file:C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/bomb.png");
+    private Image bombImage =
+            new Image("file:///C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/bomb.png");
 
-    private Image wallImage = new Image(
-            "file:C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/wall.png");
+    private Image wallImage =
+            new Image("file:///C:/Users/jo-wildried/IdeaProjects/rescuetheprincess/game/src/images/wall.png");
 
     @Override
     public void start(Stage stage) {
@@ -71,7 +68,7 @@ public class Gameboard extends Application {
 
     private void initMatrix() {
 
-        // Fill with grass
+        // Fill board with grass
         for (int r = 0; r < ROWS; r++) {
 
             for (int c = 0; c < COLS; c++) {
